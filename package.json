@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@jest/globals": "^29.7.0",
     "dotenv": "^16.0.3",
     "esbuild": "0.17.15",
+    "graphql": "^16.11.0",
     "isomorphic-fetch": "^3.0.0"
   },
   "devDependencies": {
