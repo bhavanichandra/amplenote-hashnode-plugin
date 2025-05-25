@@ -6,7 +6,7 @@ dotenv.config();
 const result = await esbuild.build({
   entryPoints: [`lib/plugin.js`],
   bundle: true,
-  format: "iife",
+  format: "esm",
   outfile: "build/compiled.js",
   packages: "external",
   platform: "node",
