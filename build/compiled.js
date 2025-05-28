@@ -68,9 +68,9 @@
           });
           let count = 10;
           if (result) {
-            console.log("result: ", result);
+            console.log("interactivity result: ", result);
           }
-          getHashnodePosts(host, "all", 10, null).then(
+          getHashnodePosts(host, count).then(
             (posts) => {
               console.log("getHashnodePosts", posts);
             }
