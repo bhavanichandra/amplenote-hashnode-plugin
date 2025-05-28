@@ -1,52 +1,31 @@
 (() => {
   // lib/arbitrary-plugin-module.js
   var HASHNODE_GRAPHQL_URL = "https://gql.hashnode.com";
-  var getHashnodePosts = async (host, fetchType, count, slug) => {
+  var getHashnodePosts = async (host, count) => {
     try {
-      let query = `
-  query Publication($host: String!, $slug: String!) {
-    publication(host: $host) {
-      post(slug: $slug) {
-        id
-        slug
-        title
-        author {
-          name
+      const query = `query Publication($host: String!, $count: Int!) {
+        publication(host: $host) {
+          title
+          posts(first: $count) {
+            edges {
+              node {
+                id
+                title
+                brief
+                url
+                content {
+                  html
+                }
+              }
+            }
+            totalDocuments
+          }
         }
-        content {
-          markdown
-        }
-      }
-    }
-  }
-`;
-      let params = {
+      }`;
+      const params = {
         host,
         count
       };
-      if (fetchType !== "all") {
-        query = `
-  query Publication($host: String!, $slug: String!) {
-    publication(host: $host) {
-      post(slug: $slug) {
-        id
-        slug
-        title
-        author {
-          name
-        }
-        content {
-          markdown
-        }
-      }
-    }
-  }
-`;
-        params = {
-          host,
-          slug
-        };
-      }
       const response = await fetch(HASHNODE_GRAPHQL_URL, {
         method: "POST",
         headers: {
@@ -81,7 +60,17 @@
           return true;
         },
         run: async function(app, noteUUID) {
-          getHashnodePosts("bhavanichandra.hashnode.dev", "all", 10, null).then(
+          const host = app.settings["Blog Host Name"];
+          const result = await app.prompt("Enter no of blogs to fetch", {
+            inputs: [
+              { label: "Count", value: "10", type: "string" }
+            ]
+          });
+          let count = 10;
+          if (result) {
+            console.log("result: ", result);
+          }
+          getHashnodePosts(host, "all", 10, null).then(
             (posts) => {
               console.log("getHashnodePosts", posts);
             }
