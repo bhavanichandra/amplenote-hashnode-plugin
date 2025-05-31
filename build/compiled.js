@@ -159,7 +159,7 @@
               throw new Error(`${err.message} (line (74)`);
             }
           }
-          const navigateUrl = `${origin}/notes/${dashboardNote.uuid}`;
+          const navigateUrl = `${origin}/notes/${hashnodeNote.uuid}`;
           console.log("Navigating to ", navigateUrl);
           await app.navigate(navigateUrl);
         }
