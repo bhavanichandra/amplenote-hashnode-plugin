@@ -29,7 +29,7 @@
                   slug
                 }
                 content {
-                  html
+                  markdown
                 }
               }
             }
