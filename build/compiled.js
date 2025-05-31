@@ -140,7 +140,7 @@
       for (const post of posts) {
         const noteData = {
           title: post.title,
-          content: post.content.markdown,
+          content: post.content,
           tags: [this.constants.hashnodeConstants.mainTag, publication.title]
         };
         const existingNote = await app.findNote({
