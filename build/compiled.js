@@ -30,7 +30,7 @@
   ));
 
   // lib/plugin.js
-  var import_hashnode = __toESM(__require("hashnode"), 1);
+  var hashnode = __toESM(__require("hashnode"), 1);
   var plugin = {
     constants: {
       fetchCount: 10,
@@ -51,7 +51,7 @@
     },
     replaceText: {},
     _initialize(app, hashnodeModule) {
-      this.hashnodeModule = hashnodeModule || import_hashnode.default;
+      this.hashnodeModule = hashnodeModule || hashnode;
       if (app && app.settings["Hashnode API Key"]) {
         this.constants.hashnodeConstants.apiKey = app.settings["Hashnode API Key"];
       }
