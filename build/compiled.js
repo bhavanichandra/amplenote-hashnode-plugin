@@ -37,7 +37,7 @@
       apiKeyConst: "",
       hashnodeConstants: {
         apiKey: "",
-        mainTag: `hashnode`
+        mainTag: "hashnode"
       }
     },
     hashnodeModule: void 0,
