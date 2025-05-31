@@ -110,7 +110,7 @@
     replaceText: {},
     _initialize(app, hashnodeModule) {
       this.hashnodeModule = hashnodeModule || hashnode_exports;
-      if (app && app.settings["Hashnode API Key"]) {
+      if (app?.settings["Hashnode API Key"]) {
         this.constants.hashnodeConstants.apiKey = app.settings["Hashnode API Key"];
       }
     },
@@ -127,31 +127,32 @@
         return;
       }
       const [hashnodeBlogAddress, postFetchCount] = result;
-      console.log("Got the inputs", hashnodeBlogAddress, postFetchCount);
-      const publications = await this.hashnodeModule.getAllPosts(hashnodeBlogAddress, parseInt(postFetchCount));
+      const publications = await this.hashnodeModule.getAllPosts(
+        hashnodeBlogAddress,
+        parseInt(postFetchCount)
+      );
       if (!publications.success) {
-        app.alert(`Failed to fetch posts from hashnode. Response of api: ${publications.message}`);
+        app.alert(`Failed to fetch posts from hashnode. Response: ${publications.message}`);
         return;
       }
-      console.log("Publications fetched:", publications);
       const publication = publications.data;
-      const publicationTitle = publication.title;
       const posts = publication.posts;
       for (const post of posts) {
-        const tags = [this.constants.hashnodeConstants.mainTag, publicationTitle];
-        let hashnodeNote = await app.findNote({ name: post.title, tag: tags });
-        if (hashnodeNote) {
-          hashnodeNote = await app.notes.find(hashnodeNote.uuid);
+        const noteData = {
+          title: post.title,
+          content: post.content.markdown,
+          tags: [this.constants.hashnodeConstants.mainTag, publication.title]
+        };
+        const existingNote = await app.findNote({
+          name: post.title,
+          tag: noteData.tags
+        });
+        if (existingNote) {
           console.log("Post already synced, skipping");
           continue;
         }
-        if (post.series && post.series.name) {
-          tags.push(post.series.name);
-        }
-        console.log("Creating new note");
-        hashnodeNote = await app.notes.create(post.title, tags);
-        console.log("Writing note", hashnodeNote, "content", post.content);
-        await app.insertNoteContent(hashnodeNote, post.content);
+        const createdNote = await app.notes.create(noteData.title, noteData.tags);
+        await app.insertNoteContent({ uuid: createdNote.uuid }, noteData.content);
         console.log(`Post: ${post.title} is synced`);
       }
       console.log("Post sync done!");
