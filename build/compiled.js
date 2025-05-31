@@ -113,21 +113,22 @@
       if (app && app.settings["Hashnode API Key"]) {
         this.constants.hashnodeConstants.apiKey = app.settings["Hashnode API Key"];
       }
-      this._hashnodeBlogAddress = "";
-      this._count = this.constants.fetchCount;
     },
     async _syncAllPosts(app) {
-      [this._hashnodeBlogAddress, this._count] = app.prompt("Hashnode Sync Options", {
+      console.log("Started posts sync");
+      const [hashnodeBlogAddress, postFetchCount] = app.prompt("Hashnode Sync Options", {
         inputs: [
           { label: "Hashnode Blog Address or url", type: "string" },
-          { label: "No of blogs to retrieve", type: "string", value: "10" }
+          { label: "No of blogs to retrieve", type: "string", value: this.constants.fetchCount }
         ]
       });
-      const publications = await this.hashnodeModule.getAllPosts(this._hashnodeBlogAddress, parseInt(this._count));
+      console.log("Got the inputs", hashnodeBlogAddress, postFetchCount);
+      const publications = await this.hashnodeModule.getAllPosts(hashnodeBlogAddress, parseInt(postFetchCount));
       if (!publications.success) {
         app.alert(`Failed to fetch posts from hashnode. Response of api: ${publications.message}`);
         return;
       }
+      console.log("Publications fetched:", publications);
       const publication = publications.data;
       const publicationTitle = publication.title;
       const posts = publication.posts;
@@ -142,14 +143,15 @@
         if (post.series?.name) {
           tags.push(post.series.name);
         }
+        console.log("Creating new note");
         hashnodeNote = await app.notes.create(post.title, tags);
         await app.insertNoteContent(hashnodeNote, post.content);
         console.log(`Post: ${post.title} is synced`);
       }
-      const isAllPostsSynced = publication.totalDocuments === parseInt(this._count);
-      const postsRemainingToSync = publication.totalDocuments - parseInt(this._count);
+      const isAllPostsSynced = publication.totalDocuments === parseInt(postFetchCount);
+      const postsRemainingToSync = publication.totalDocuments - parseInt(postFetchCount);
       const message = isAllPostsSynced ? "All Posts are synced" : `${postsRemainingToSync} posts are to be synced`;
-      app.alert(`${this._count} posts are sync. ${message}`);
+      app.alert(`${postFetchCount} posts are sync. ${message}`);
     }
   };
   var plugin_default = plugin;
