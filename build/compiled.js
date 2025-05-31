@@ -116,7 +116,7 @@
     },
     async _syncAllPosts(app) {
       console.log("Started posts sync");
-      const [hashnodeBlogAddress, postFetchCount] = app.prompt("Hashnode Sync Options", {
+      const { hashnodeBlogAddress, postFetchCount } = app.prompt("Hashnode Sync Options", {
         inputs: [
           { label: "Hashnode Blog Address or url", type: "string" },
           { label: "No of blogs to retrieve", type: "string", value: this.constants.fetchCount }
