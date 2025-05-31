@@ -1,36 +1,94 @@
 (() => {
-  var __create = Object.create;
   var __defProp = Object.defineProperty;
-  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getProtoOf = Object.getPrototypeOf;
-  var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
-    get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
-  }) : x)(function(x) {
-    if (typeof require !== "undefined")
-      return require.apply(this, arguments);
-    throw new Error('Dynamic require of "' + x + '" is not supported');
-  });
-  var __copyProps = (to, from, except, desc) => {
-    if (from && typeof from === "object" || typeof from === "function") {
-      for (let key of __getOwnPropNames(from))
-        if (!__hasOwnProp.call(to, key) && key !== except)
-          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-    }
-    return to;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
   };
-  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-    // If the importer is in node compatibility mode or this is not an ESM
-    // file that has been converted to a CommonJS file using a Babel-
-    // compatible transform (i.e. "__esModule" has not been set), then set
-    // "default" to the CommonJS "module.exports" for node compatibility.
-    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-    mod
-  ));
+
+  // lib/hashnode.js
+  var hashnode_exports = {};
+  __export(hashnode_exports, {
+    getAllPosts: () => getAllPosts
+  });
+  var HASHNODE_GRAPHQL_URL = "https://gql.hashnode.com";
+  var getHashnodePosts = async (host, count) => {
+    try {
+      const query = `query Publication($host: String!, $count: Int!) {
+        publication(host: $host) {
+          title
+          posts(first: $count) {
+            edges {
+              node {
+                id
+                title
+                brief
+                url
+                slug
+                series {
+                  name
+                  slug
+                }
+                content {
+                  html
+                }
+              }
+            }
+            totalDocuments
+          }
+        }
+      }`;
+      const params = {
+        host,
+        count
+      };
+      const response = await fetch(HASHNODE_GRAPHQL_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          query,
+          variables: params
+        })
+      });
+      const responseJson = await response.json();
+      console.log(responseJson);
+      return responseJson;
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
+  };
+  var getAllPosts = async (host, count) => {
+    const publicationsResponse = await getHashnodePosts(host, count);
+    if (!publicationsResponse.data) {
+      return {
+        message: `No publications found for the host ${host}`,
+        success: false
+      };
+    }
+    const posts = publicationsResponse.data.publication.posts.edges.map((edge) => {
+      return {
+        id: edge.node.id,
+        title: edge.node.title,
+        slug: edge.node.slug,
+        series: edge.node.series,
+        brief: edge.node.brief,
+        url: edge.node.url,
+        content: edge.node.content.markdown
+      };
+    });
+    return {
+      success: true,
+      data: {
+        title: publicationsResponse.data.publication.title,
+        posts,
+        totalDocuments: publicationsResponse.data.publication.posts.totalDocuments
+      }
+    };
+  };
 
   // lib/plugin.js
-  var hashnode = __toESM(__require("hashnode"), 1);
   var plugin = {
     constants: {
       fetchCount: 10,
@@ -51,7 +109,7 @@
     },
     replaceText: {},
     _initialize(app, hashnodeModule) {
-      this.hashnodeModule = hashnodeModule || hashnode;
+      this.hashnodeModule = hashnodeModule || hashnode_exports;
       if (app && app.settings["Hashnode API Key"]) {
         this.constants.hashnodeConstants.apiKey = app.settings["Hashnode API Key"];
       }
