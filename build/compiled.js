@@ -150,6 +150,19 @@
         }
         console.log("Creating new note");
         hashnodeNote = await app.notes.create(post.title, tags);
+        if (app.context.noteUUID !== hashnodeNote.uuid) {
+          let origin;
+          try {
+            origin = window.location.origin.includes("localhost") ? "http://localhost:3000" : window.location.origin.replace("plugins", "www");
+          } catch (err) {
+            if (err.name === "TypeError") {
+              throw new Error(`${err.message} (line (74)`);
+            }
+          }
+          const navigateUrl = `${origin}/notes/${dashboardNote.uuid}`;
+          console.log("Navigating to ", navigateUrl);
+          await app.navigate(navigateUrl);
+        }
         await app.insertNoteContent(hashnodeNote, post.content);
         console.log(`Post: ${post.title} is synced`);
       }
