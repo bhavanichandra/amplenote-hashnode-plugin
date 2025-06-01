@@ -2,7 +2,7 @@
   "dependencies": {
     "@jest/globals": "^29.7.0",
     "dotenv": "^16.0.3",
-    "esbuild": "0.17.15",
+    "esbuild": "0.25.0",
     "isomorphic-fetch": "^3.0.0"
   },
   "devDependencies": {
