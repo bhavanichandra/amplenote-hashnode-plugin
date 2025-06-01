@@ -52,7 +52,7 @@
         })
       });
       const responseJson = await response.json();
-      console.log(responseJson);
+      console.dir(responseJson);
       return responseJson;
     } catch (error) {
       console.error(error);
@@ -107,7 +107,6 @@
         }
       }
     },
-    replaceText: {},
     _initialize(app, hashnodeModule) {
       this.hashnodeModule = hashnodeModule || hashnode_exports;
       if (app?.settings["Hashnode API Key"]) {
@@ -119,7 +118,11 @@
       const result = await app.prompt("Hashnode Sync Options", {
         inputs: [
           { label: "Hashnode Blog Address or url", type: "string" },
-          { label: "No of blogs to retrieve", type: "string", value: this.constants.fetchCount }
+          {
+            label: "No of blogs to retrieve",
+            type: "string",
+            value: this.constants.fetchCount
+          }
         ]
       });
       if (!result) {
@@ -132,7 +135,9 @@
         parseInt(postFetchCount)
       );
       if (!publications.success) {
-        app.alert(`Failed to fetch posts from hashnode. Response: ${publications.message}`);
+        app.alert(
+          `Failed to fetch posts from hashnode. Response: ${publications.message}`
+        );
         return;
       }
       const publication = publications.data;
@@ -148,14 +153,14 @@
           tag: noteData.tags
         });
         if (existingNote) {
-          console.log("Post already synced, skipping");
+          console.debug("Post already synced, skipping", post.title);
           continue;
         }
         const createdNote = await app.notes.create(noteData.title, noteData.tags);
         await app.insertNoteContent({ uuid: createdNote.uuid }, noteData.content);
-        console.log(`Post: ${post.title} is synced`);
+        console.debug(`Post: ${post.title} is synced`);
       }
-      console.log("Post sync done!");
+      console.debug("Post sync done!");
     }
   };
   var plugin_default = plugin;
