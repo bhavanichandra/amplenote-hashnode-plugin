@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Bhavani Chandra Vajapeyayaajula
+// Licensed under the MIT License
+
 import {jest} from '@jest/globals'
 import {mockApp, mockNote, mockPlugin} from "../lib/test-helpers.js"
 import {mockHashnodePublications} from "./mock-hashnode-posts.js";

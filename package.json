@@ -19,5 +19,10 @@
   },
   "testEnvironment": "jsdom",
   "type": "module",
+  "author": {
+    "name": "Bhavani Chandra",
+    "email": "bhavanichandra9@gmail.com",
+    "url": "bhavanichandra.com/info"
+  },
   "version": "1.0.0"
 }

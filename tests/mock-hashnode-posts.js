@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Bhavani Chandra Vajapeyayaajula
+// Licensed under the MIT License
+
 export const mockHashnodePublications = {
   "data": {
     "publication": {
